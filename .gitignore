@@ -1,0 +1,5 @@
+*.o
+build
+a.out
+simple_line_count
+wc_alias
