@@ -3,21 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO Add long arithmetic
-// may be array or dynamic array of char
-
-
-// file size restriction -> https://en.wikipedia.org/wiki/Comparison_of_file_systems
-
-
-// Можно сначала складывать все в long unsigned int, когда переменная
-// переполнится, то складывать уже со строкой
-
-// Кроме этого можно работать с массивом байт не как со строкой, а
-// а как с массивом 4-битовых чисел. Таким образом можно сократить
-// объем используемой памяти в два раза
-
-
 void print_convert_string(char * number) {
 	if (number == NULL) {
 		printf("empty string\n");
@@ -30,7 +15,6 @@ void print_convert_string(char * number) {
 	while (i >= 1) {
 		if (number[i] != '0')
 			break;
-
 		--i;
 	}
 	
@@ -58,19 +42,6 @@ char * parse_args(int argc, char * argv[]) {
 }
 
 
-// TODO write this function
-
-// Использовать строку не получится, так как
-// по ней по-любому нужно будет пробегать, а для этого
-// понадобится индекс (он ограничен 2^64, 8 байтами)
-// Строка - хороший вариант. Так как длина числа максимального
-// будет больше 10^19 соответственно само число -> 10^(10^19)
-
-// Нужно скорее всего сделать однонаправленный список, в котором 
-// хранить значение отдельной цифры. Пробегать по списку можно при
-// помощи while, концом будет next == NULL
-
-
 char * increment_str_num(char * number) {
 	int c = 0; 
 	char * result;
@@ -94,7 +65,6 @@ char * increment_str_num(char * number) {
 	while (c != '\0') {
 		if (isdigit(c) == 0) {
 			fprintf(stderr, "[ERROR] Error while increment number '%s'\n", result);
-			free(result);
 			return NULL;
 		}
 
@@ -118,7 +88,6 @@ char * increment_str_num(char * number) {
 		char * new_number = realloc(result, number_len + 1 + delta);
 		if (new_number == NULL) {
 			fprintf(stderr, "[ERROR] Error while allocate memory for number\n");
-			free(result);
 			return NULL;
 		}
 
@@ -150,6 +119,7 @@ char * count_lines(char * filename) {
 	FILE * input_file = fopen(filename, "r");
 	if (input_file == NULL) {
 		fprintf(stderr, "[ERROR] Error while open file '%s'\n", filename);
+		free(lines);
 		return NULL;
 	}
 
@@ -158,6 +128,7 @@ char * count_lines(char * filename) {
 			result = increment_str_num(lines);
 			if (result == NULL) {
 				fprintf(stderr, "[ERROR] Error while incrementing lines in '%s'\n", filename);
+				free(lines);
 				return NULL;
 			}
 			lines = result;
@@ -170,12 +141,14 @@ char * count_lines(char * filename) {
 
 	if (ferror(input_file) != 0) {
 		fprintf(stderr, "[ERROR] Error while read file '%s'\n", filename);
+		free(lines);
 		return NULL;	
 	}
 
 
 	if (fclose(input_file) < 0) {
 		fprintf(stderr, "[ERROR] Error while close file '%s'\n", filename);
+		free(lines);
 		return NULL;	
 	}
 
